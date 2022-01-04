@@ -14,8 +14,8 @@ if(NOT BOARD OR BOARD STREQUAL "")
     set(BOARD "T31")
 elseif(BOARD STREQUAL "T31")
     message(STATUS "Selected board T31")
-elseif(BOARD STREQUAL "SSC325")
-    message(FATAL "SSC325 is not implemented yet.")
+elseif(BOARD STREQUAL "FH8626")
+    message(STATUS "Selected board FH8626")
 elseif(BOARD STREQUAL "AK3919")
     message(FATAL "AK3919 is not implemented yet.")
 endif()
@@ -46,6 +46,25 @@ if(BOARD STREQUAL "T31")
     )
     set(BOARD_LIBS_STATIC
         libimp.a libalog.a librt.a libm.a pthread dl
+    )
+endif()
+
+if(BOARD STREQUAL "FH8626")
+    set(FH8626_SDK_DIR ${CMAKE_CURRENT_LIST_DIR}/3rdparty/FH8626/)
+    # Add board related SDK sources here
+    set(BOARD_SRCS
+    )
+    # Add board related SDK header here
+    set(BOARD_INCS_DIR
+        ${FH8626_SDK_DIR}/include/
+    )
+    set(USE_MUCLIBC ON)
+    # Add board related SDK lib here
+    set(BOARD_LIBS_SHARED
+        pthread
+    )
+    set(BOARD_LIBS_STATIC
+        pthread
     )
 endif()
 

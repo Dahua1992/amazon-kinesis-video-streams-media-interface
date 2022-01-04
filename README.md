@@ -9,6 +9,7 @@
 ## Supported SoCs
 
 - T31
+- FH8626
 
 ## Getting started with out-of-box KVS WebRTC sample
 
@@ -21,7 +22,7 @@ git clone https://github.com/aws-samples/amazon-kinesis-video-streams-media-inte
 4. Build the code:
 ```bash
 cd amazon-kinesis-video-streams-media-interface
-mkdir build; cd build; cmake ..
+mkdir build; cd build; cmake .. -DBOARD=${YOUR_BOARD_NAME}
 make
 ```
 5. Upload built artifacts(i.e kvswebrtcmaster-static) at *amazon-kinesis-video-streams-media-interface/build/samples/webrtc/* to your board.
@@ -57,7 +58,7 @@ git clone https://github.com/aws-samples/amazon-kinesis-video-streams-media-inte
 3. Build the code:
 ```bash
 cd amazon-kinesis-video-streams-media-interface
-mkdir build; cd build; cmake .. -DBUILD_WEBRTC_SAMPLES=OFF -DBUILD_KVS_SAMPLES=ON
+mkdir build; cd build; cmake .. -DBUILD_WEBRTC_SAMPLES=OFF -DBUILD_KVS_SAMPLES=ON -DBOARD=${YOUR_BOARD_NAME}
 make
 ```
 4. Upload built artifacts(i.e kvsproducer-static) at *amazon-kinesis-video-streams-media-interface/build/samples/kvs/* to your board.
@@ -84,7 +85,7 @@ git clone https://github.com/aws-samples/amazon-kinesis-video-streams-media-inte
 3. Build the code:
 ```bash
 cd amazon-kinesis-video-streams-media-interface
-mkdir build; cd build; cmake .. -DBUILD_WEBRTC_SAMPLES=OFF -DBUILD_SAVE_FRAME_SAMPLES=ON
+mkdir build; cd build; cmake .. -DBUILD_WEBRTC_SAMPLES=OFF -DBUILD_SAVE_FRAME_SAMPLES=ON -DBOARD=${YOUR_BOARD_NAME}
 make
 ```
 4. Execute sample on your board: `./saveframe-static $FILE_NAME`
@@ -96,6 +97,34 @@ To adapt other platforms SDKs with **Amazon Kinesis Video Streams Media Interfac
 - [VideoCapturer.h](include/com/amazonaws/kinesis/video/capturer/VideoCapturer.h): abstract interfaces defined for video capturer sensor/encoder.
 - [AudioCapturer.h](include/com/amazonaws/kinesis/video/capturer/AudioCapturer.h): abstract interfaces defined for audio capturer sensor/encoder.
 - [AudioPlayer.h](include/com/amazonaws/kinesis/video/player/AudioPlayer.h): abstract interfaces defined for audio playback sensor/encoder.
+
+The implementations of those interfaces should be put into *source/${BOARD_NAME}* and follow the name rules:
+- `${BOARD_NAME}VideoCapturer.c`
+- `${BOARD_NAME}AudioCapturer.c`
+- `${BOARD_NAME}AudioPlayer.c`
+
+Then you need to add board specific source files and libs into [CMakeLists.txt](https://github.com/aws-samples/amazon-kinesis-video-streams-media-interface/blob/main/CMakeLists.txt#L23):
+
+```cmake
+if(BOARD STREQUAL "MY_BOARD")
+    set(MY_BOARD_SDK_DIR ${CMAKE_CURRENT_LIST_DIR}/3rdparty/MY_BOARD/)
+    # Add board related SDK sources here
+    set(BOARD_SRCS
+    )
+    # Add board related SDK header here
+    set(BOARD_INCS_DIR
+        ${MY_BOARD_SDK_DIR}/include/
+    )
+    set(USE_MUCLIBC ON)
+    # Add board related SDK lib here
+    set(BOARD_LIBS_SHARED
+        pthread
+    )
+    set(BOARD_LIBS_STATIC
+        pthread
+    )
+endif()
+```
 
 ## Contributing
 
